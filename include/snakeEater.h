@@ -12,12 +12,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#define GAME_MAPSIZE 500
-#define H_RESOLUTION 640
-#define V_RESOLUTION 480
-#define GAME_PLAYER_SPEED 1
-
 #define IPC_KEY 2123
+#define PORTNUM 1312
 
 #ifndef semun
 union semun {

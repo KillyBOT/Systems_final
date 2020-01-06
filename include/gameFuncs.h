@@ -1,0 +1,11 @@
+col getCol(struct gameState* g, int x, int y);
+col setCol(struct gameState* g, int x, int y, col newColor);
+int checkDeath(struct gameState* g, int player, int x, int y);
+
+struct gameState* createState();
+void addPlayer(struct gameState* g);
+void changePlayerDir(struct gameState* g, int player, int newDir);
+void updateState(struct gameState* g);
+void deleteState(struct gameState* g);
+
+void printState(struct gameState* g);
