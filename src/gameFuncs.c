@@ -102,6 +102,34 @@ void updateState(struct gameState* g){
 	}
 	g->tics++;
 }
+
+void updatePlayerState(struct gameState* g, int player){
+
+	int newX, newY, dir;
+
+	if(g->pData[player] == PLAYER_STATE_ALIVE){ //If the player is alive
+			newX = g->pPos[player].x;
+			newY = g->pPos[player].y;
+			dir = g->pPos[player].dir;
+
+			setCol(g, g->pPos[player].x, g->pPos[player].y, (col)player+1);
+
+			if(dir == DIR_UP) newY--;
+			if(dir == DIR_DOWN) newY++;
+			if(dir == DIR_LEFT) newX--;
+			if(dir == DIR_RIGHT) newX++;
+
+			if(checkDeath(g,player,newX,newY)) g->pData[player] = PLAYER_STATE_JUSTDEAD;
+			else{
+				g->pPos[player].x = newX;
+				g->pPos[player].y = newY;
+			}
+
+		} else if(g->pData[player] == PLAYER_STATE_JUSTDEAD){
+			g->pData[player] = PLAYER_STATE_DEAD;
+		}
+}
+
 void deleteState(struct gameState* g){
 	free(g->pPos);
 	free(g->pData);

@@ -2,15 +2,23 @@
 #include "game.h"
 #include "gameFuncs.h"
 #include "graphics.h"
+#include "network.h"
 
 int main(int argc, char* argv[]){
+
+	int sSock; //Server socket
+	struct gameCommand *gC; //Game command
+
+	fd_set read_fds; //Read file descriptors
 
 	SDL_Window* gWindow = NULL;// Window
 	SDL_Renderer* gRenderer = NULL;// Renderer
 
-	int running = 1;
+	int running = 1; //Whether the game is running or not
 
 	SDL_Event e; // Event handler
+
+	struct gameState *g; //Game state
 
 	if(initSDL(gWindow, gRenderer)) {
 		printf("Error initializing SDL! Closing...\n");
@@ -29,12 +37,14 @@ int main(int argc, char* argv[]){
 		return 1;
 	}
 
-	struct gameState* g = createState();
+	sSock = client_setup(TEST_IP);
+	g = createState();
+	gC = calloc(sizeof(struct gameCommand),1);
 
-	addPlayer(g);
-	addPlayer(g);
-	addPlayer(g);
-	addPlayer(g);
+	//addPlayer(g);
+	//addPlayer(g);
+	//addPlayer(g);
+	//addPlayer(g);
 
 	while(running){
 
@@ -66,12 +76,24 @@ int main(int argc, char* argv[]){
 			}
 		}
 
-		drawGame(gRenderer,g);
-		updateState(g);
-		SDL_Delay(TICSPEED);
+		//drawGame(gRenderer,g);
+		//updateState(g);
+		//SDL_Delay(TICSPEED);
+
+		FD_ZERO(&read_fds);
+		FD_SET(sSock, &read_fds);
+
+		select(sSock + 1, &read_fds, NULL, NULL, NULL);
+
+		if(FD_ISSET(sSock, &read_fds)){
+			read(sSock, gC, sizeof(struct gameCommand));
+			printf("Server says do command %d\n", gC->cType);
+		}
+
 	}
 		
 	deleteState(g);
+	free(gC);
 
 	closeSDL(gWindow,gRenderer);
 

@@ -1,32 +1,61 @@
 #include "snakeEater.h"
+#include "game.h"
+#include "network.h"
+
+void subServer(int cSocket);
 
 int main(int argc, char* argv[]){
 
-	struct sockaddr_in address;
-	int serverFD, testSocket, readVal;
-	int opt = 1;
-	int addrlen = sizeof(address);
-	char readBuffer[1024] = {0};
-	char* testMsg = "From server";
+	int lSocket; //Listening socket
+	int cSocket[MAX_PLAYERS]; //Client sockets for each 
+	int subServer_count; //Number of sub serverss
+	char buffer[512];
+	struct gameCommand* gC = (struct gameCommand*)calloc(sizeof(struct gameCommand),1);
 
-	serverFD = socket(AF_INET, SOCK_STREAM, 0);
+	fd_set read_fds; //File descriptor to read from
 
-	setsockopt(serverFD, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+	lSocket = server_setup();
 
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons(PORTNUM);
+	while(1){
 
-	bind(serverFD, (struct sockaddr*)&address, sizeof(address));
+		FD_ZERO(&read_fds);
+		FD_SET(STDIN_FILENO, &read_fds);
+		FD_SET(lSocket, &read_fds);
 
-	listen(serverFD, 3);
+		select(lSocket + 1, &read_fds, NULL, NULL, NULL);
 
-	testSocket = accept(serverFD, (struct sockaddr*)&address, (socklen_t*)&addrlen);
+		if(FD_ISSET(STDIN_FILENO, &read_fds)){
+			fgets(buffer, sizeof(buffer),stdin);
+			gC->cType = (int)strtol(buffer,NULL,10);
+			printf("Current number of sub servers: %d\n", subServer_count);
+		}
 
-	readVal = read(testSocket, readBuffer, 1024);
-	printf("Recieved: %s\n", readBuffer);
-	send(testSocket, testMsg, strlen(testMsg), 0);
-	printf("Sent message to client\n");
-	return 0;
+		if(FD_ISSET(lSocket, &read_fds)){
 
+			int f;
+
+			cSocket[0] = server_connect(lSocket);
+
+			f = fork();
+			if(!f){
+				subServer(cSocket[0]);
+			} else {
+				subServer_count++;
+				close(cSocket[0]);
+			}
+		}
+	}
+
+}
+
+void subServer(int cSocket){
+	struct gameCommand* gC = (struct gameCommand*)calloc(sizeof(struct gameCommand),1);
+	char buffer[512];
+
+	fgets(buffer, sizeof(buffer),stdin);
+	gC->cType = (int)strtol(buffer,NULL,10);
+
+	write(cSocket, gC, sizeof(gC));
+	close(cSocket);
+	exit(0);
 }
