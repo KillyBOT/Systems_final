@@ -31,6 +31,7 @@ int main(int argc, char* argv[]){
 		addPlayer(g);
 
 		f = fork();
+		pipe(pPipe[pConnected]);
 		if(f == 0){
 			close(pPipe[pConnected][1]);
 			subServer(cSocket[pConnected],pConnected,pPipe[pConnected][0]); //This is the write port
@@ -47,8 +48,9 @@ int main(int argc, char* argv[]){
 
 	while(runServer){
 		for(int n = 0; n < pConnected; n++){
-			write(pPipe[n][1],g,sizeof(g));
+			write(pPipe[n][1],g,sizeof(struct gameState));
 		}
+		break;
 
 	}
 
@@ -68,8 +70,10 @@ void subServer(int cSocket, int player, int readPipe){
 	write(cSocket, &player, sizeof(int));
 
 	read(readPipe, g, sizeof(g));
-
 	write(cSocket, g, sizeof(g));
+
 	close(cSocket);
+	close(readPipe);
+	
 	exit(0);
 }

@@ -23,6 +23,9 @@ int server_setup(){
 	hints->ai_flags = AI_PASSIVE;  //Use all valid addresses
 	getaddrinfo(NULL, PORT, hints, &results); //NULL means use local address
 
+	int optVal = 1;
+	error_check( setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &optVal, sizeof(optVal)), "setsockopt" );
+
 	error_check( bind(sd, results->ai_addr, results->ai_addrlen), "Server bind");
 	printf("Server socket bounded\n");
 

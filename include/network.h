@@ -4,7 +4,7 @@
 #include <netdb.h>
 
 #define TEST_IP "127.0.0.1"
-#define PORT "9001"
+#define PORT "8080"
 
 int server_setup();
 int server_connect(int sDesc);

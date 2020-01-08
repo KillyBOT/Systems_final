@@ -24,8 +24,9 @@ Each player will have a seperate instance of the game running on their computer,
 ## Topics taught in class that this project will use
 
 * Pipes (between the main and sub servers)
-* Forking; creating separate processes (Forking the main server to each sub server)
-* Memory allocation (This one is cheating, but might as well include it)
+* Processes (Forking the main server to each sub server)
+* Memory allocation
+* Networking
 
 ## Rough outline of project
 

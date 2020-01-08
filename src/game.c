@@ -8,7 +8,6 @@ int main(int argc, char* argv[]){
 
 	int readSock; //Read from sub server
 	int writeSock; //Write to main server
-	struct gameCommand *gC; //Game command
 
 	SDL_Window* gWindow = NULL;// Window
 	SDL_Renderer* gRenderer = NULL;// Renderer
@@ -17,7 +16,8 @@ int main(int argc, char* argv[]){
 
 	SDL_Event e; // Event handler
 
-	struct gameState *g; //Game state
+	struct gameState *g = createState(); //Game state
+	struct gameCommand *gC = malloc(sizeof(struct gameCommand)); //Game command
 
 	int player; //Which player are you?
 
@@ -41,13 +41,15 @@ int main(int argc, char* argv[]){
 	readSock = client_setup(TEST_IP);
 	writeSock = client_setup(TEST_IP);
 	read(readSock, &player, sizeof(int));
-	read(readSock, g, sizeof(g));
-	gC = calloc(sizeof(struct gameCommand),1);
+	read(readSock, g, sizeof(struct gameState));
 
 	//addPlayer(g);
 	//addPlayer(g);
 	//addPlayer(g);
 	//addPlayer(g);
+	printf("%d\n", player);
+
+	//printState(g);
 
 	while(running){
 
@@ -85,7 +87,7 @@ int main(int argc, char* argv[]){
 
 		//read(sSock, gC, sizeof(struct gameCommand));
 		//printf("Server says do command %d\n", gC->cType);
-		running = 0;
+		//running = 0;
 
 	}
 		
