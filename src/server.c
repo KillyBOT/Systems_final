@@ -1,17 +1,21 @@
 #include "snakeEater.h"
 #include "game.h"
+#include "gameFuncs.h"
 #include "network.h"
 
-void subServer(int cSocket);
+#define PIPE_WRITE_FD 5
+
+void subServer(int cSocket, int player, int readPipe);
 
 int main(int argc, char* argv[]){
 
 	int lSocket; //Listening socket
-	int cSocket; //Client sockets for each client
+	int cSocket[MAX_PLAYERS]; //Client sockets for each client
 	int subServer_count; //Number of sub serverss
 	char buffer[512];
 	int pPipe[MAX_PLAYERS][2]; //Pipes for communicating to each player 
 	struct gameCommand* gC = (struct gameCommand*)calloc(sizeof(struct gameCommand),1);
+	struct gameState* g = createState();
 	int f;
 	int pConnected = 0;
 	int acceptConnects = 1;
@@ -24,12 +28,15 @@ int main(int argc, char* argv[]){
 	while(pConnected < MAX_PLAYERS && acceptConnects){
 
 		cSocket[pConnected] = server_connect(lSocket);
+		addPlayer(g);
 
 		f = fork();
 		if(f == 0){
-			subServer(cSocket[pConnected]); //This is the write port
+			close(pPipe[pConnected][1]);
+			subServer(cSocket[pConnected],pConnected,pPipe[pConnected][0]); //This is the write port
 		} else {
 			close(cSocket[pConnected]);
+			close(pPipe[pConnected][0]);
 			cSocket[pConnected] = server_connect(lSocket);
 			subServer_count++;
 			pConnected++;
@@ -39,23 +46,30 @@ int main(int argc, char* argv[]){
 	}
 
 	while(runServer){
-		
+		for(int n = 0; n < pConnected; n++){
+			write(pPipe[n][1],g,sizeof(g));
+		}
+
 	}
 
-	for(int n = 0; n < pConnected){
+	for(int n = 0; n < pConnected; n++){
 		close(cSocket[n]);
+		close(pPipe[n][1]);
 	}
+
+	deleteState(g);
 
 }
 
-void subServer(int cSocket){
-	struct gameCommand* gC = (struct gameCommand*)calloc(sizeof(struct gameCommand),1);
-	char buffer[512];
+void subServer(int cSocket, int player, int readPipe){
 
-	fgets(buffer, sizeof(buffer),stdin);
-	gC->cType = (int)strtol(buffer,NULL,10);
+	struct gameState* g;
 
-	write(cSocket, gC, sizeof(gC));
+	write(cSocket, &player, sizeof(int));
+
+	read(readPipe, g, sizeof(g));
+
+	write(cSocket, g, sizeof(g));
 	close(cSocket);
 	exit(0);
 }

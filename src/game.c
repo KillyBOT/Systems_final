@@ -19,6 +19,8 @@ int main(int argc, char* argv[]){
 
 	struct gameState *g; //Game state
 
+	int player; //Which player are you?
+
 	if(initSDL(gWindow, gRenderer)) {
 		printf("Error initializing SDL! Closing...\n");
 		return 1;
@@ -36,8 +38,10 @@ int main(int argc, char* argv[]){
 		return 1;
 	}
 
-	sSock = client_setup(TEST_IP);
-	g = createState();
+	readSock = client_setup(TEST_IP);
+	writeSock = client_setup(TEST_IP);
+	read(readSock, &player, sizeof(int));
+	read(readSock, g, sizeof(g));
 	gC = calloc(sizeof(struct gameCommand),1);
 
 	//addPlayer(g);
@@ -75,12 +79,12 @@ int main(int argc, char* argv[]){
 			}
 		}
 
-		//drawGame(gRenderer,g);
-		//updateState(g);
-		//SDL_Delay(TICSPEED);
+		drawGame(gRenderer,g);
+		// updateState(g);
+		SDL_Delay(TICSPEED);
 
-		read(sSock, gC, sizeof(struct gameCommand));
-		printf("Server says do command %d\n", gC->cType);
+		//read(sSock, gC, sizeof(struct gameCommand));
+		//printf("Server says do command %d\n", gC->cType);
 		running = 0;
 
 	}
