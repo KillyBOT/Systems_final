@@ -6,10 +6,9 @@
 
 int main(int argc, char* argv[]){
 
-	int sSock; //Server socket
+	int readSock; //Read from sub server
+	int writeSock; //Write to main server
 	struct gameCommand *gC; //Game command
-
-	fd_set read_fds; //Read file descriptors
 
 	SDL_Window* gWindow = NULL;// Window
 	SDL_Renderer* gRenderer = NULL;// Renderer
@@ -80,15 +79,9 @@ int main(int argc, char* argv[]){
 		//updateState(g);
 		//SDL_Delay(TICSPEED);
 
-		FD_ZERO(&read_fds);
-		FD_SET(sSock, &read_fds);
-
-		select(sSock + 1, &read_fds, NULL, NULL, NULL);
-
-		if(FD_ISSET(sSock, &read_fds)){
-			read(sSock, gC, sizeof(struct gameCommand));
-			printf("Server says do command %d\n", gC->cType);
-		}
+		read(sSock, gC, sizeof(struct gameCommand));
+		printf("Server says do command %d\n", gC->cType);
+		running = 0;
 
 	}
 		

@@ -24,7 +24,7 @@ int server_setup(){
 	getaddrinfo(NULL, PORT, hints, &results); //NULL means use local address
 
 	error_check( bind(sd, results->ai_addr, results->ai_addrlen), "Server bind");
-	printf("Server socket bounded successfully\n");
+	printf("Server socket bounded\n");
 
 	error_check( listen(sd, 8), "Server listen" );
 	printf("Server socket now listening...\n");

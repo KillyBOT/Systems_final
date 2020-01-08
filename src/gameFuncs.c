@@ -130,6 +130,11 @@ void updatePlayerState(struct gameState* g, int player){
 		}
 }
 
+void movePlayer(struct gameState* g, int player, int dir){
+	changePlayerDir(g,player,dir);
+	updatePlayerState(g,player);
+}
+
 void deleteState(struct gameState* g){
 	free(g->pPos);
 	free(g->pData);

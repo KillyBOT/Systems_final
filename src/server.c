@@ -7,43 +7,43 @@ void subServer(int cSocket);
 int main(int argc, char* argv[]){
 
 	int lSocket; //Listening socket
-	int cSocket[MAX_PLAYERS]; //Client sockets for each 
+	int cSocket; //Client sockets for each client
 	int subServer_count; //Number of sub serverss
 	char buffer[512];
+	int pPipe[MAX_PLAYERS][2]; //Pipes for communicating to each player 
 	struct gameCommand* gC = (struct gameCommand*)calloc(sizeof(struct gameCommand),1);
+	int f;
+	int pConnected = 0;
+	int acceptConnects = 1;
+	int runServer = 1;
 
 	fd_set read_fds; //File descriptor to read from
 
 	lSocket = server_setup();
 
-	while(1){
+	while(pConnected < MAX_PLAYERS && acceptConnects){
 
-		FD_ZERO(&read_fds);
-		FD_SET(STDIN_FILENO, &read_fds);
-		FD_SET(lSocket, &read_fds);
+		cSocket[pConnected] = server_connect(lSocket);
 
-		select(lSocket + 1, &read_fds, NULL, NULL, NULL);
+		f = fork();
+		if(f == 0){
+			subServer(cSocket[pConnected]); //This is the write port
+		} else {
+			close(cSocket[pConnected]);
+			cSocket[pConnected] = server_connect(lSocket);
+			subServer_count++;
+			pConnected++;
 
-		if(FD_ISSET(STDIN_FILENO, &read_fds)){
-			fgets(buffer, sizeof(buffer),stdin);
-			gC->cType = (int)strtol(buffer,NULL,10);
-			printf("Current number of sub servers: %d\n", subServer_count);
+			acceptConnects = 0;
 		}
+	}
 
-		if(FD_ISSET(lSocket, &read_fds)){
+	while(runServer){
+		
+	}
 
-			int f;
-
-			cSocket[0] = server_connect(lSocket);
-
-			f = fork();
-			if(!f){
-				subServer(cSocket[0]);
-			} else {
-				subServer_count++;
-				close(cSocket[0]);
-			}
-		}
+	for(int n = 0; n < pConnected){
+		close(cSocket[n]);
 	}
 
 }

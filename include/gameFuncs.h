@@ -6,6 +6,8 @@ struct gameState* createState();
 void addPlayer(struct gameState* g);
 void changePlayerDir(struct gameState* g, int player, int newDir);
 void updateState(struct gameState* g);
+void updatePlayerState(struct gameState* g, int player);
+void movePlayer(struct gameState* g, int player, int dir);
 void deleteState(struct gameState* g);
 
 void printState(struct gameState* g);

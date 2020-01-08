@@ -7,10 +7,6 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <netdb.h>
 
 #define IPC_KEY 2123
 #define PORTNUM 1312
@@ -24,3 +20,5 @@ union semun {
                               (Linux-specific) */
 };
 #endif
+
+void error_check(int i, char* s);
