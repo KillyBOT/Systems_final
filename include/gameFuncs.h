@@ -4,10 +4,12 @@ int checkDeath(struct gameState* g, int player, int x, int y);
 
 struct gameState* createState();
 void addPlayer(struct gameState* g);
+void addPlayer2(struct gameState* g, int player);
 void changePlayerDir(struct gameState* g, int player, int newDir);
 void updateState(struct gameState* g);
 void updatePlayerState(struct gameState* g, int player);
 void movePlayer(struct gameState* g, int player, int dir);
+void process(struct gameState* g, struct gameCommand gC);
 void deleteState(struct gameState* g);
 
 void printState(struct gameState* g);

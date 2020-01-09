@@ -43,6 +43,12 @@ void addPlayer(struct gameState* g){
 
 }
 
+void addPlayer2(struct gameState *g, int player){
+	if(player < MAX_PLAYERS){
+		g->pData[player] = PLAYER_STATE_ALIVE;
+	}
+}
+
 void changePlayerDir(struct gameState* g, int player, int newDir){
 	if(player < MAX_PLAYERS){
 		int ifSwitch = 1;
@@ -161,6 +167,26 @@ int checkDeath(struct gameState* g, int player, int x, int y){
 	return 0;
 }
 
+void process(struct gameState* g, struct gameCommand gC){
+	switch(gC.cType){
+
+		case CMD_ADDPLAYER:
+		addPlayer2(g, gC.player);
+		break;
+
+		case CMD_MOVE:
+		movePlayer(g,gC.player,gC.dir);
+		break;
+
+		case CMD_NOTHING:
+		break;
+
+		default:
+		printf("Unknown command!\n");
+		break;
+	}
+}
+
 col getCol(struct gameState* g, int x, int y){
 	return g->board[ (x * MAPSIZE) + y];
 }
@@ -193,4 +219,27 @@ void printState(struct gameState* g){
 		printf("\n");
 	}
 	printf("\n");
+}
+
+struct gameCommand createCommand(int cType, int player){
+	struct gameCommand gC;
+	gC.cType = cType;
+	gC.player = player;
+
+	return gC;
+}
+
+struct gameCommand getCommand(int fd){
+	struct gameCommand gC;
+
+	read(fd, &gC.cType, sizeof(int));
+	read(fd, &gC.player, sizeof(int));
+
+	switch(gC.cType){
+		default:
+		printf("Unknown command!\n");
+		break;
+	}
+
+	return gC;
 }

@@ -17,9 +17,10 @@ int main(int argc, char* argv[]){
 	SDL_Event e; // Event handler
 
 	struct gameState *g = createState(); //Game state
-	struct gameCommand *gC = malloc(sizeof(struct gameCommand)); //Game command
+	struct gameCommand gC;
 
 	int player; //Which player are you?
+	int prevDirection;
 
 	if(initSDL(gWindow, gRenderer)) {
 		printf("Error initializing SDL! Closing...\n");
@@ -40,8 +41,7 @@ int main(int argc, char* argv[]){
 
 	readSock = client_setup(TEST_IP);
 	writeSock = client_setup(TEST_IP);
-	read(readSock, &player, sizeof(int));
-	read(readSock, g, sizeof(struct gameState));
+	read(readSock, &player, sizeof(player));
 
 	//addPlayer(g);
 	//addPlayer(g);
@@ -49,9 +49,16 @@ int main(int argc, char* argv[]){
 	//addPlayer(g);
 	printf("%d\n", player);
 
-	//printState(g);
+	addPlayer2(g,player);
+	gC.cType = CMD_ADDPLAYER;
+	gC.player = player;
+	write(writeSock,&gC,sizeof(gC));
+	prevDirection = g->pData[player];
 
 	while(running){
+
+		gC.cType = CMD_MOVE;
+		gC.player = player;
 
 		while(SDL_PollEvent(&e) != 0){
 			if( e.type == SDL_QUIT){
@@ -60,39 +67,53 @@ int main(int argc, char* argv[]){
 			else if( e.type == SDL_KEYDOWN){
 				switch(e.key.keysym.sym){
 					case SDLK_UP:
-					changePlayerDir(g,0,DIR_UP);
+					//changePlayerDir(g,0,DIR_UP);
+					gC.dir = DIR_UP;
 					break;
 
 					case SDLK_DOWN:
-					changePlayerDir(g,0,DIR_DOWN);
+					//changePlayerDir(g,0,DIR_DOWN);
+					gC.dir = DIR_DOWN;
 					break;
 
 					case SDLK_LEFT:
-					changePlayerDir(g,0,DIR_LEFT);
+					//changePlayerDir(g,0,DIR_LEFT);
+					gC.dir = DIR_LEFT;
 					break;
 
 					case SDLK_RIGHT:
-					changePlayerDir(g,0,DIR_RIGHT);
+					//changePlayerDir(g,0,DIR_RIGHT);
+					gC.dir = DIR_RIGHT;
 					break;
 
 					default:
 					break;
 				}
+			} else {
+				gC.dir = prevDirection;
 			}
 		}
+
+		prevDirection = gC.dir;
+
+		//process(g,gC);
+		//process(g,gC);
+
+		write(writeSock,&gC,sizeof(gC));
+
+		read(readSock, &gC, sizeof(gC));
+		printf("Server says do command %d on player %d\n", gC.cType, gC.player);
+		if(gC.cType == CMD_MOVE) printf("Dir: %d\n", gC.dir);
+
+		process(g,gC);
 
 		drawGame(gRenderer,g);
 		// updateState(g);
 		SDL_Delay(TICSPEED);
 
-		//read(sSock, gC, sizeof(struct gameCommand));
-		//printf("Server says do command %d\n", gC->cType);
-		//running = 0;
-
 	}
 		
 	deleteState(g);
-	free(gC);
 
 	closeSDL(gWindow,gRenderer);
 

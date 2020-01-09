@@ -1,5 +1,6 @@
 #define MAPSIZE 150
 #define TICSPEED 35
+#define MSG_MAXSIZE 512
 
 #define MAX_PLAYERS 4
 #define PLAYER_1 0
@@ -20,8 +21,11 @@
 #define START_PADDING 5 //How far away from the edge you are when you start
 
 #define CMD_MOVE 0
-#define CMD_PRINT 1
-#define CMD_UPDATE 2
+#define CMD_UPDATE 1
+#define CMD_ADDPLAYER 2
+#define CMD_KILLPLAYER 3
+#define CMD_NOTHING 4
+#define CMD_PRINT 5
 
 typedef unsigned char col; //Color
 
@@ -44,10 +48,8 @@ struct gameState{
 struct gameCommand{
 	int cType; //The type of command
 
-	int player;
-	int dir;
-
-	struct gameState state;
+	int player; //Player to do the comamnd on
+	int dir; //Direction to move
 	
-	char* msg;
+	char* msg; //Message to sends
 };
