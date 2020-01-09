@@ -46,8 +46,9 @@ int main(int argc, char* argv[]){
 			subServer_count++;
 			pConnected++;
 
-			acceptConnects = 0;
 		}
+
+		acceptConnects = 0;
 	}
 
 	while(runServer){

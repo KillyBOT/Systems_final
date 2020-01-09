@@ -29,7 +29,7 @@ int server_setup(){
 	error_check( bind(sd, results->ai_addr, results->ai_addrlen), "Server bind");
 	printf("Server socket bounded\n");
 
-	error_check( listen(sd, 8), "Server listen" );
+	error_check( listen(sd, MAX_PLAYERS), "Server listen" );
 	printf("Server socket now listening...\n");
 
 	free(hints);

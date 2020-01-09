@@ -58,9 +58,10 @@ int main(int argc, char* argv[]){
 	while(running){
 
 		gC.cType = CMD_MOVE;
-		gC.player = player;
+		gC.dir = prevDirection;
 
 		while(SDL_PollEvent(&e) != 0){
+
 			if( e.type == SDL_QUIT){
 				running = 0;
 			}
@@ -89,28 +90,25 @@ int main(int argc, char* argv[]){
 					default:
 					break;
 				}
-			} else {
-				gC.dir = prevDirection;
 			}
 		}
 
 		prevDirection = gC.dir;
 
-		//process(g,gC);
-		//process(g,gC);
-
 		write(writeSock,&gC,sizeof(gC));
 
+		SDL_Delay(TICSPEED);
+
+
 		read(readSock, &gC, sizeof(gC));
-		printf("Server says do command %d on player %d\n", gC.cType, gC.player);
+
+		//printf("Server says do command %d on player %d\n", gC.cType, gC.player);
 		if(gC.cType == CMD_MOVE) printf("Dir: %d\n", gC.dir);
 
 		process(g,gC);
 
 		drawGame(gRenderer,g);
 		// updateState(g);
-		SDL_Delay(TICSPEED);
-
 	}
 		
 	deleteState(g);
