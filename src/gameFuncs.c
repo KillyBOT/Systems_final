@@ -8,21 +8,21 @@ struct gameState* createState(){
 	newState->pPos = calloc(sizeof(struct playerPos), MAX_PLAYERS);
 
 	//Set starting positions for each player
-	newState->pPos[0].x = START_PADDING;
-	newState->pPos[0].y = (MAPSIZE / 2);
-	newState->pPos[0].dir = DIR_RIGHT;
+	newState->pPos[PLAYER_1].x = START_PADDING;
+	newState->pPos[PLAYER_1].y = (MAPSIZE / 2);
+	newState->pPos[PLAYER_1].dir = DIR_RIGHT;
 
-	newState->pPos[1].x = MAPSIZE-1-START_PADDING;
-	newState->pPos[1].y = (MAPSIZE / 2);
-	newState->pPos[1].dir = DIR_LEFT;
+	newState->pPos[PLAYER_2].x = MAPSIZE-1-START_PADDING;
+	newState->pPos[PLAYER_2].y = (MAPSIZE / 2);
+	newState->pPos[PLAYER_2].dir = DIR_LEFT;
 
-	newState->pPos[2].x = (MAPSIZE / 2);
-	newState->pPos[2].y = START_PADDING;
-	newState->pPos[2].dir = DIR_DOWN;
+	newState->pPos[PLAYER_3].x = (MAPSIZE / 2);
+	newState->pPos[PLAYER_3].y = START_PADDING;
+	newState->pPos[PLAYER_3].dir = DIR_DOWN;
 
-	newState->pPos[3].x = (MAPSIZE / 2);
-	newState->pPos[3].y = MAPSIZE-1-START_PADDING;
-	newState->pPos[3].dir = DIR_UP;
+	newState->pPos[PLAYER_4].x = (MAPSIZE / 2);
+	newState->pPos[PLAYER_4].y = MAPSIZE-1-START_PADDING;
+	newState->pPos[PLAYER_4].dir = DIR_UP;
 
 	newState->pData = calloc(sizeof(int), MAX_PLAYERS);
 

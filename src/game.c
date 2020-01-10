@@ -41,24 +41,39 @@ int main(int argc, char* argv[]){
 
 	readSock = client_setup(TEST_IP);
 	writeSock = client_setup(TEST_IP);
-	read(readSock, &player, sizeof(player));
 
-	//addPlayer(g);
-	//addPlayer(g);
-	//addPlayer(g);
-	//addPlayer(g);
+	read(readSock, &player, sizeof(player));
 	printf("%d\n", player);
 
-	addPlayer2(g,player);
 	gC.cType = CMD_ADDPLAYER;
 	gC.player = player;
 	write(writeSock,&gC,sizeof(gC));
-	prevDirection = g->pData[player];
+	read(readSock,g,sizeof(g));
+
+	/*switch(player){
+		case PLAYER_1:
+		prevDirection = PLAYER_1_STARTDIR;
+		break;
+		case PLAYER_2:
+		prevDirection = PLAYER_2_STARTDIR;
+		break;
+		case PLAYER_3:
+		prevDirection = PLAYER_3_STARTDIR;
+		break;
+		case PLAYER_$:
+		prevDirection = PLAYER_4_STARTDIR;
+		break;
+		default:
+		break;
+	}*/
+
+	prevDirection = g->pPos[player].dir;
+	printf("%d\n", prevDirection);
 
 	while(running){
 
-		gC.cType = CMD_MOVE;
-		gC.dir = prevDirection;
+		//gC.player = player;
+		//gC.cType = CMD_MOVE;
 
 		while(SDL_PollEvent(&e) != 0){
 
@@ -69,7 +84,7 @@ int main(int argc, char* argv[]){
 				switch(e.key.keysym.sym){
 					case SDLK_UP:
 					//changePlayerDir(g,0,DIR_UP);
-					gC.dir = DIR_UP;
+					//gC.dir = DIR_UP;
 					break;
 
 					case SDLK_DOWN:
@@ -88,6 +103,7 @@ int main(int argc, char* argv[]){
 					break;
 
 					default:
+					gC.dir = prevDirection;
 					break;
 				}
 			}
@@ -96,19 +112,19 @@ int main(int argc, char* argv[]){
 		prevDirection = gC.dir;
 
 		write(writeSock,&gC,sizeof(gC));
-
-		SDL_Delay(TICSPEED);
-
-
-		read(readSock, &gC, sizeof(gC));
+		read(readSock,g,sizeof(g));
+		printf("%d\n", g->pData[player]);
 
 		//printf("Server says do command %d on player %d\n", gC.cType, gC.player);
-		if(gC.cType == CMD_MOVE) printf("Dir: %d\n", gC.dir);
+		//if(gC.cType == CMD_MOVE) printf("Dir: %d\n", gC.dir);
 
-		process(g,gC);
+		//process(g,gC);
 
 		drawGame(gRenderer,g);
 		// updateState(g);
+		SDL_Delay(1000);
+		printf("Test\n");
+
 	}
 		
 	deleteState(g);
