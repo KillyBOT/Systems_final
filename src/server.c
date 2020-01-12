@@ -13,8 +13,6 @@ int main(int argc, char* argv[]){
 	int cSocket[MAX_PLAYERS]; //Client sockets for each client
 	int subServer_count; //Number of sub serverss
 	int pPipe[MAX_PLAYERS][2]; //Pipes for communicating to each player 
-	struct gameCommand gC;
-	struct gameCommand doNothing;
 	struct gameState* g = createState();
 	int f;
 	int pConnected = 0;
@@ -26,14 +24,11 @@ int main(int argc, char* argv[]){
 
 	lSocket = server_setup();
 
-	doNothing.cType = CMD_NOTHING;
-
 	while(pConnected < MAX_PLAYERS && acceptConnects && pConnected < 2){
 
 		cSocket[pConnected] = server_connect(lSocket);
 
 		write(cSocket[pConnected], &pConnected, sizeof(pConnected));
-
 		addPlayer2(g,pConnected);
 
 		pipe(pPipe[pConnected]);
@@ -64,12 +59,13 @@ int main(int argc, char* argv[]){
 
 	while(runServer){
 		for(int n = 0; n < pConnected; n++){
-			read(cSocket[n],&dir,sizeof(int));
+			recv(cSocket[n],&dir,sizeof(int),MSG_WAITALL);
 
 			//printf("Client %d says go in direction %d\n", n, dir);
 
 			changePlayerDir(g,n,dir);
 		}
+
 		//printState(g);
 		updateState(g);
 		//printState(g);

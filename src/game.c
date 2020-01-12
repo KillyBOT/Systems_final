@@ -75,7 +75,7 @@ int main(int argc, char* argv[]){
 
 	printf("Waiting for other players to connect...\n");
 
-	read(readSock,&g,sizeof(g));
+	recv(readSock,&g,sizeof(g),MSG_WAITALL);
 	drawGame(gRenderer, &g);
 
 	prevDirection = g.pPos[player].dir;
@@ -130,7 +130,8 @@ int main(int argc, char* argv[]){
 		//printf("Dir: %d\n", dir);
 
 		write(writeSock,&dir,sizeof(int));
-		read(readSock,&g,sizeof(struct gameState));
+
+		recv(readSock,&g,sizeof(struct gameState),MSG_WAITALL);
 
 		drawGame(gRenderer,&g);
 
