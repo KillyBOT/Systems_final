@@ -13,3 +13,4 @@ void process(struct gameState* g, struct gameCommand gC);
 void deleteState(struct gameState* g);
 
 void printState(struct gameState* g);
+void printLeaderBoard(struct gameState* g);

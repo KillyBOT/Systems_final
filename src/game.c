@@ -16,11 +16,14 @@ int main(int argc, char* argv[]){
 
 	SDL_Event e; // Event handler
 
-	struct gameState *g = createState(); //Game state
+	struct gameState g; //Game state
 	struct gameCommand gC;
 
 	int player; //Which player are you?
+	int dir = 0;
 	int prevDirection;
+
+	char ip[64] = "";
 
 	if(initSDL(gWindow, gRenderer)) {
 		printf("Error initializing SDL! Closing...\n");
@@ -39,36 +42,49 @@ int main(int argc, char* argv[]){
 		return 1;
 	}
 
-	readSock = client_setup(TEST_IP);
-	writeSock = client_setup(TEST_IP);
+	if(argc > 1){
+		strcpy(ip,argv[1]);
+	} else {
+		strcpy(ip,TEST_IP);
+	}
 
+	readSock = client_setup(ip);
 	read(readSock, &player, sizeof(player));
-	printf("%d\n", player);
-
-	gC.cType = CMD_ADDPLAYER;
-	gC.player = player;
-	write(writeSock,&gC,sizeof(gC));
-	read(readSock,g,sizeof(g));
-
-	/*switch(player){
+	printf("You are player %d.\n", player);
+	printf("Color: ");
+	switch(player){
 		case PLAYER_1:
-		prevDirection = PLAYER_1_STARTDIR;
+		printf("RED");
 		break;
 		case PLAYER_2:
-		prevDirection = PLAYER_2_STARTDIR;
+		printf("BLUE");
 		break;
 		case PLAYER_3:
-		prevDirection = PLAYER_3_STARTDIR;
+		printf("GREEN");
 		break;
-		case PLAYER_$:
-		prevDirection = PLAYER_4_STARTDIR;
+		case PLAYER_4:
+		printf("YELLOW");
 		break;
 		default:
+		printf("ERROR! Tell Kyle if you see this!");
 		break;
-	}*/
+	}
+	printf("\n");
 
-	prevDirection = g->pPos[player].dir;
-	printf("%d\n", prevDirection);
+	writeSock = client_setup(ip);
+
+	printf("Waiting for other players to connect...\n");
+
+	read(readSock,&g,sizeof(g));
+
+	prevDirection = g.pPos[player].dir;
+	dir = prevDirection;
+
+	for(int x = 3; x > 0; x--){
+		printf("%d...\n", x);
+		SDL_Delay(1000);
+	}
+	printf("GO!!!\n");
 
 	while(running){
 
@@ -84,51 +100,61 @@ int main(int argc, char* argv[]){
 				switch(e.key.keysym.sym){
 					case SDLK_UP:
 					//changePlayerDir(g,0,DIR_UP);
-					//gC.dir = DIR_UP;
+					dir = DIR_UP;
 					break;
 
 					case SDLK_DOWN:
 					//changePlayerDir(g,0,DIR_DOWN);
-					gC.dir = DIR_DOWN;
+					dir = DIR_DOWN;
 					break;
 
 					case SDLK_LEFT:
 					//changePlayerDir(g,0,DIR_LEFT);
-					gC.dir = DIR_LEFT;
+					dir = DIR_LEFT;
 					break;
 
 					case SDLK_RIGHT:
 					//changePlayerDir(g,0,DIR_RIGHT);
-					gC.dir = DIR_RIGHT;
+					dir = DIR_RIGHT;
 					break;
 
 					default:
-					gC.dir = prevDirection;
+					dir = prevDirection;
 					break;
 				}
 			}
 		}
 
-		prevDirection = gC.dir;
+		prevDirection = dir;
+		//printf("Dir: %d\n", dir);
 
-		write(writeSock,&gC,sizeof(gC));
-		read(readSock,g,sizeof(g));
-		printf("%d\n", g->pData[player]);
+		write(writeSock,&dir,sizeof(int));
+		read(readSock,&g,sizeof(struct gameState));
 
-		//printf("Server says do command %d on player %d\n", gC.cType, gC.player);
-		//if(gC.cType == CMD_MOVE) printf("Dir: %d\n", gC.dir);
+		drawGame(gRenderer,&g);
 
-		//process(g,gC);
+		if(g.pData[player] == PLAYER_STATE_JUSTDEAD) printf("You died!\n");
 
-		drawGame(gRenderer,g);
-		// updateState(g);
-		SDL_Delay(1000);
-		printf("Test\n");
+		running = 0;
+		for(int x = 0; x < g.pNum; x++){
+			if(g.pData[x] > 0 && g.pData[x] != PLAYER_STATE_DEAD){
+				running = 1;
+				break;
+			}
+		}
+		//printf("%d\n", g.pLen[player]);
+
+		SDL_Delay(TICSPEED);
+		//printf("Test\n");
 
 	}
 		
-	deleteState(g);
+	//deleteState(g);
 
+	printLeaderBoard(&g);
+
+	close(writeSock);
+	close(readSock);
 	closeSDL(gWindow,gRenderer);
 
 	return 0;

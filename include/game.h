@@ -19,13 +19,18 @@
 #define DIR_RIGHT 3
 
 #define START_PADDING 5 //How far away from the edge you are when you start
+#define PLAYER_1_STARTDIR DIR_LEFT
+#define PLAYER_2_STARTDIR DIR_RIGHT
+#define PLAYER_3_STARTDIR DIR_DOWN
+#define PLAYER_4_STARTDIR DIR_UP
 
 #define CMD_MOVE 0
 #define CMD_UPDATE 1
-#define CMD_ADDPLAYER 2
-#define CMD_KILLPLAYER 3
-#define CMD_NOTHING 4
-#define CMD_PRINT 5
+#define CMD_CHANGEPLAYER 2
+#define CMD_ADDPLAYER 3
+#define CMD_KILLPLAYER 4
+#define CMD_NOTHING 5
+#define CMD_PRINT 6
 
 typedef unsigned char col; //Color
 
@@ -36,13 +41,18 @@ struct playerPos{
 };
 
 struct gameState{
-	struct playerPos* pPos;
-	int* pData;
+	struct playerPos pPos[MAX_PLAYERS];
+	int pData[MAX_PLAYERS];
+	int lBoard[MAX_PLAYERS][2];
+	int pLen[MAX_PLAYERS];
 
+	int pNum;
 	int pNewPlayer;
+	int lBoardPos;
+	int lBoardPlace;
 	long tics;
 
-	col* board;
+	col board[MAPSIZE * MAPSIZE];
 };
 
 struct gameCommand{

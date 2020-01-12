@@ -20,6 +20,7 @@ int main(int argc, char* argv[]){
 	int pConnected = 0;
 	int acceptConnects = 1;
 	int runServer = 1;
+	int dir;
 
 	fd_set read_fds; //File descriptor to read from
 
@@ -30,7 +31,10 @@ int main(int argc, char* argv[]){
 	while(pConnected < MAX_PLAYERS && acceptConnects && pConnected < 2){
 
 		cSocket[pConnected] = server_connect(lSocket);
-		write(cSocket[pConnected],&pConnected,sizeof(pConnected));
+
+		write(cSocket[pConnected], &pConnected, sizeof(pConnected));
+
+		addPlayer2(g,pConnected);
 
 		pipe(pPipe[pConnected]);
 		//printf("%d %d\n", pPipe[pConnected][0], pPipe[pConnected][1]);
@@ -43,68 +47,47 @@ int main(int argc, char* argv[]){
 			close(pPipe[pConnected][PIPE_READ]);
 			close(cSocket[pConnected]);
 			cSocket[pConnected] = server_connect(lSocket);
-			subServer_count++;
+			//subServer_count++;
 			pConnected++;
 		}
 
 		//acceptConnects = 0;
 	}
 
-	fd_set client_fds;// The file descriptors for each client
+	for(int n = 0; n < pConnected; n++){
+		//printState(g);
+		write(pPipe[n][PIPE_WRITE],g,sizeof(struct gameState));
+	}
+
+
+	//fd_set client_fds;// The file descriptors for each client
 
 	while(runServer){
-
-		/*FD_ZERO(&client_fds);
-
 		for(int n = 0; n < pConnected; n++){
-			FD_SET(cSocket[n],&client_fds);
+			read(cSocket[n],&dir,sizeof(int));
+
+			//printf("Client %d says go in direction %d\n", n, dir);
+
+			changePlayerDir(g,n,dir);
 		}
-
-		select(cSocket[pConnected - 1] + 1, &client_fds, NULL, NULL, NULL);
-
-		//See which socket recieved data
-
-		int currentClient;
-
-		for(int n = 0; n < pConnected; n++){
-			if(FD_ISSET(cSocket[n],&client_fds)){
-				currentClient = n;
-				break;
-			}
-		}
-
-		read(cSocket[currentClient],&gC,sizeof(gC));
-
-		printf("Client %d says do command %d\n", currentClient, gC.cType);
-		if(gC.cType == CMD_MOVE) printf("Dir: %d\n", gC.dir);
-
-		doNothing.player = currentClient;
-
-		for(int n = 0; n < pConnected; n++){
-			write(pPipe[n][PIPE_WRITE],&gC,sizeof(gC));
-		}*/
-
-		int dir;
-
-		for(int n = 0; n < pConnected; n++){
-			read(cSocket[n],&gC,sizeof(gC));
-
-			printf("Client %d says do command %d\n", n, gC.cType);
-			if(gC.cType == CMD_MOVE) printf("Dir: %d\n", gC.dir);
-
-			process(g,gC);
-		}
-
+		//printState(g);
+		updateState(g);
 		//printState(g);
 
 		for(int n = 0; n < pConnected; n++) {
-			write(pPipe[n][PIPE_WRITE],g,sizeof(g));
+			write(pPipe[n][PIPE_WRITE],g,sizeof(struct gameState));
 		}
 
-		//gC.cType = -1; //Close the sub server
-		//write(pPipe[currentClient][PIPE_WRITE], &gC, sizeof(gC));
-		
+		runServer = 0;
+		for(int x = 0; x < MAX_PLAYERS; x++){
+			if(g->pData[x] > 0 && g->pData[x] != PLAYER_STATE_DEAD){
+				runServer = 1;
+			}
+		}
+
 	}
+	printf("Game over!\n");
+	printLeaderBoard(g);
 
 	for(int n = 0; n < pConnected; n++){
 		close(cSocket[n]);
@@ -113,30 +96,30 @@ int main(int argc, char* argv[]){
 
 	deleteState(g);
 
+	return 0;
+
 }
 
 void subServer(int cSocket, int player, int readPipe){
 
-	struct gameState* g = createState();
+	struct gameState g;
+	int keepRunning = 1;
 
-	while(1){
-		read(readPipe, g, sizeof(g));
+	while(keepRunning){
+		read(readPipe, &g, sizeof(g));
+		write(cSocket, &g, sizeof(g));
 
-		//printf("%d\n", gC.cType);
-
-		if(g->pData[player] == PLAYER_STATE_DEAD){
-			close(cSocket);
-			close(readPipe);
-			deleteState(g);
-
-			exit(0);
+		keepRunning = 0;
+		for(int x = 0; x < MAX_PLAYERS; x++){
+			if(g.pData[x] > 0 && g.pData[x] != PLAYER_STATE_DEAD){
+				keepRunning = 1;
+			}
 		}
-
-		write(cSocket, g, sizeof(g));
-
-		/*close(cSocket);
-		close(readPipe);
-		
-		exit(0);*/
 	}
+
+
+	close(cSocket);
+	close(readPipe);
+
+	exit(0);
 }

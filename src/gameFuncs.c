@@ -5,7 +5,7 @@
 struct gameState* createState(){
 	struct gameState* newState = malloc(sizeof(struct gameState));
 
-	newState->pPos = calloc(sizeof(struct playerPos), MAX_PLAYERS);
+	//newState->pPos = calloc(sizeof(struct playerPos), MAX_PLAYERS);
 
 	//Set starting positions for each player
 	newState->pPos[PLAYER_1].x = START_PADDING;
@@ -24,12 +24,26 @@ struct gameState* createState(){
 	newState->pPos[PLAYER_4].y = MAPSIZE-1-START_PADDING;
 	newState->pPos[PLAYER_4].dir = DIR_UP;
 
-	newState->pData = calloc(sizeof(int), MAX_PLAYERS);
+	//newState->pData = calloc(sizeof(int), MAX_PLAYERS);
+	newState->lBoardPos = 0;
+	newState->lBoardPlace = 0;
+
+	for(int x = 0; x < MAX_PLAYERS; x++){
+		newState->pData[x] = 0;
+		newState->pLen[x] = 0;
+		newState->lBoard[x][0] = 0;
+		newState->lBoard[x][1] = 0;
+	}
 
 	newState->pNewPlayer = 0;
 	newState->tics = 0;
 
-	newState->board = calloc(sizeof(col), MAPSIZE * MAPSIZE);
+	//newState->board = calloc(sizeof(col), MAPSIZE * MAPSIZE);
+	for(int y = 0; y < MAPSIZE; y++){
+		for(int x = 0; x < MAPSIZE; x++){
+			newState->board[(y * MAPSIZE) + x] = 0;
+		}
+	}
 
 	return newState;
 
@@ -39,6 +53,8 @@ void addPlayer(struct gameState* g){
 	if(g->pNewPlayer < MAX_PLAYERS){
 		g->pData[g->pNewPlayer] = PLAYER_STATE_ALIVE;
 		g->pNewPlayer++;
+		g->lBoardPlace++;
+		g->pNum++;
 	}
 
 }
@@ -46,6 +62,8 @@ void addPlayer(struct gameState* g){
 void addPlayer2(struct gameState *g, int player){
 	if(player < MAX_PLAYERS){
 		g->pData[player] = PLAYER_STATE_ALIVE;
+		g->lBoardPlace++;
+		g->pNum++;
 	}
 }
 
@@ -81,6 +99,7 @@ void changePlayerDir(struct gameState* g, int player, int newDir){
 void updateState(struct gameState* g){
 
 	int newX, newY, dir;
+	int lBoardPlaceToAdd = 0;
 
 	for(int cPlayer = 0; cPlayer < MAX_PLAYERS; cPlayer++){
 		if(g->pData[cPlayer] == PLAYER_STATE_ALIVE){ //If the player is alive
@@ -95,17 +114,26 @@ void updateState(struct gameState* g){
 			if(dir == DIR_LEFT) newX--;
 			if(dir == DIR_RIGHT) newX++;
 
+			//printf("%d %d\n", newX, newY);
 			if(checkDeath(g,cPlayer,newX,newY)) g->pData[cPlayer] = PLAYER_STATE_JUSTDEAD;
 			else{
 				g->pPos[cPlayer].x = newX;
 				g->pPos[cPlayer].y = newY;
+				g->pLen[cPlayer] += 1;
 			}
 
 		} else if(g->pData[cPlayer] == PLAYER_STATE_JUSTDEAD){
+			printf("Player %d just died!\n", cPlayer);
 			g->pData[cPlayer] = PLAYER_STATE_DEAD;
+			g->lBoard[g->lBoardPos][0] = cPlayer;
+			g->lBoard[g->lBoardPos][1] = g->lBoardPlace;
+			g->lBoardPos++;
+			lBoardPlaceToAdd++;
 		}
 
 	}
+	g->lBoardPlace -= lBoardPlaceToAdd;
+	//printf("%d\n",g->lBoardPlace);
 	g->tics++;
 }
 
@@ -142,9 +170,9 @@ void movePlayer(struct gameState* g, int player, int dir){
 }
 
 void deleteState(struct gameState* g){
-	free(g->pPos);
-	free(g->pData);
-	free(g->board);
+	//free(g->pPos);
+	//free(g->pData);
+	//free(g->board);
 	free(g);
 }
 
@@ -219,6 +247,13 @@ void printState(struct gameState* g){
 		printf("\n");
 	}
 	printf("\n");
+}
+
+void printLeaderBoard(struct gameState* g){
+	printf("Leaderboard: [Player] [Place] [Length]\n");
+	for(int x = g->lBoardPos - 1; x >= 0; x--){
+		printf("             %8d%8d %d\n", g->lBoard[x][0], g->lBoard[x][1], g->pLen[g->lBoard[x][0]]);
+	}
 }
 
 struct gameCommand createCommand(int cType, int player){

@@ -26,7 +26,7 @@ void drawGame(SDL_Renderer* r, struct gameState* g){
 
 	for(int y = 0; y < MAPSIZE; y++){
 		for(int x = 0; x < MAPSIZE; x++){
-			SDL_Rect currentRect = {padding + (x * rectSize), y * rectSize, rectSize, rectSize};
+			SDL_Rect currentRect = {(x * rectSize), y * rectSize, rectSize, rectSize};
 			
 			if(getCol(g,x,y) == 0) SDL_SetRenderDrawColor(r, 0xFF, 0xFF, 0xFF, 0xFF);
 			else if(getCol(g,x,y) == PLAYER_1 + 1) SDL_SetRenderDrawColor(r, 0xFF, 0x00, 0x00, 0xFF);
@@ -40,7 +40,7 @@ void drawGame(SDL_Renderer* r, struct gameState* g){
 
 	for(int p = 0; p < MAX_PLAYERS; p++){
 		if(g->pData[p] == PLAYER_STATE_ALIVE){
-			SDL_Rect currentRect = {padding + (g->pPos[p].x * rectSize), g->pPos[p].y * rectSize, rectSize, rectSize};
+			SDL_Rect currentRect = {(g->pPos[p].x * rectSize), g->pPos[p].y * rectSize, rectSize, rectSize};
 
 			if(p == PLAYER_1)SDL_SetRenderDrawColor(r, 0xFF, 0x00, 0x00, 0xFF);
 			if(p == PLAYER_2)SDL_SetRenderDrawColor(r, 0x00, 0x00, 0xFF, 0xFF);
