@@ -3,8 +3,6 @@
 #include "gameFuncs.h"
 #include "network.h"
 
-#define PIPE_WRITE_FD 5
-
 void subServer(int cSocket, int player, int readPipe);
 
 int main(int argc, char* argv[]){

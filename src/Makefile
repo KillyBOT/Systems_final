@@ -6,7 +6,7 @@ endif
 
 IDIR = ../include
 CFLAGS = -I$(IDIR)
-LIBS = -lSDL2 -lpthread
+LIBS = -lSDL2
 
 ODIR = obj
 LDIR = ../lib

@@ -17,11 +17,13 @@ int main(int argc, char* argv[]){
 	SDL_Event e; // Event handler
 
 	struct gameState g; //Game state
-	struct gameCommand gC;
 
 	int player; //Which player are you?
 	int dir = 0;
 	int prevDirection;
+
+	struct timeval stop, start;
+	int latency; //How much time it took to do one tic
 
 	char ip[64] = "";
 
@@ -92,6 +94,8 @@ int main(int argc, char* argv[]){
 		//gC.player = player;
 		//gC.cType = CMD_MOVE;
 
+		gettimeofday(&start,NULL);
+
 		while(SDL_PollEvent(&e) != 0){
 
 			if( e.type == SDL_QUIT){
@@ -144,9 +148,15 @@ int main(int argc, char* argv[]){
 				break;
 			}
 		}
+
+		gettimeofday(&stop, NULL);
 		//printf("%d\n", g.pLen[player]);
 
-		SDL_Delay(TICSPEED);
+		latency = ((stop.tv_usec - start.tv_usec) / 1000) + (stop.tv_sec - start.tv_sec) * 1000;
+		printf("Latency: %dms\n", latency);
+
+		if(latency > TICSPEED - 1) latency = TICSPEED - 1;
+		SDL_Delay(TICSPEED - latency);
 		//printf("Test\n");
 
 	}
