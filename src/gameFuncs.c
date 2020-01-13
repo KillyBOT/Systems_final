@@ -55,6 +55,7 @@ void addPlayer(struct gameState* g){
 		g->pNewPlayer++;
 		g->lBoardPlace++;
 		g->pNum++;
+		g->tics++;
 	}
 
 }
@@ -64,6 +65,7 @@ void addPlayer2(struct gameState *g, int player){
 		g->pData[player] = PLAYER_STATE_ALIVE;
 		g->lBoardPlace++;
 		g->pNum++;
+		g->tics++;
 	}
 }
 
