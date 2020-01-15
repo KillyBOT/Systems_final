@@ -16,9 +16,12 @@ int main(int argc, char* argv[]){
 
 	SDL_Event e; // Event handler
 
-	struct gameState g; //Game state
+	struct gameState* g = createState(); //Game state
+	//struct gameUpdate* u = malloc(sizeof(struct gameUpdate)); //Game update
+	int pDir[MAX_PLAYERS];
 
 	int player; //Which player are you?
+	int pNum;
 	int dir = 0;
 	int prevDirection;
 
@@ -77,10 +80,19 @@ int main(int argc, char* argv[]){
 
 	printf("Waiting for other players to connect...\n");
 
-	recv(readSock,&g,sizeof(g),MSG_WAITALL);
-	drawGame(gRenderer, &g);
+	recv(readSock,pDir,sizeof(pDir),MSG_WAITALL);
+	
+	for(int p = 0; p < MAX_PLAYERS; p++){
+		if(pDir[p] == PLAYER_STATE_ALIVE){
+			addPlayer2(g,p);
+		}
+	}
 
-	prevDirection = g.pPos[player].dir;
+	
+
+	drawGame(gRenderer, g);
+
+	prevDirection = g->pPos[player].dir;
 	dir = prevDirection;
 
 	for(int x = 3; x > 0; x--){
@@ -130,20 +142,38 @@ int main(int argc, char* argv[]){
 			}
 		}
 
+		if(g->pData[player] == PLAYER_STATE_DEAD) dir = -1;
+
 		prevDirection = dir;
-		//printf("Dir: %d\n", dir);
 
 		write(writeSock,&dir,sizeof(int));
 
-		recv(readSock,&g,sizeof(struct gameState),MSG_WAITALL);
+		recv(readSock,pDir,sizeof(pDir),MSG_WAITALL);
 
-		drawGame(gRenderer,&g);
+		//printf("Dir: %d\n", dir);
 
-		if(g.pData[player] == PLAYER_STATE_JUSTDEAD) printf("You died!\n");
+		// int temp;
+		// for(int p = 0; p < MAX_PLAYERS / 2; p++){ //Endian-ness is annoying
+		// 	temp = u->data[p];
+		// 	u->data[p] = u->data[MAX_PLAYERS - p - 1];
+		// 	u->data[MAX_PLAYERS - p - 1] = temp;
+		// }
+
+		//printf("You: %d\n", player);
+		for(int p = 0; p < MAX_PLAYERS; p++){
+			//printf("Player: %d. Dir: %d\n", p, pDir[p]);
+			changePlayerDir(g,p,pDir[p]);
+		}
+
+		updateState(g);
+
+		drawGame(gRenderer,g);
+
+		if(g->pData[player] == PLAYER_STATE_JUSTDEAD) printf("You died!\n");
 
 		running = 0;
-		for(int x = 0; x < g.pNum; x++){
-			if(g.pData[x] > 0 && g.pData[x] != PLAYER_STATE_DEAD){
+		for(int x = 0; x < g->pNum; x++){
+			if(pDir[x] > 0){
 				running = 1;
 				break;
 			}
@@ -161,13 +191,16 @@ int main(int argc, char* argv[]){
 
 	}
 		
-	//deleteState(g);
+	printf("Game over!\n");
+	printLeaderBoard(g);
 
-	printLeaderBoard(&g);
+	//free(u);
+	deleteState(g);
 
 	close(writeSock);
 	close(readSock);
 	closeSDL(gWindow,gRenderer);
+
 
 	return 0;
 }
