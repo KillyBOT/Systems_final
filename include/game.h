@@ -13,10 +13,10 @@
 #define PLAYER_STATE_JUSTDEAD 2
 #define PLAYER_STATE_DEAD 3
 
-#define DIR_UP 0
-#define DIR_DOWN 1
-#define DIR_LEFT 2
-#define DIR_RIGHT 3
+#define DIR_UP 1
+#define DIR_DOWN 2
+#define DIR_LEFT 3
+#define DIR_RIGHT 4
 
 #define START_PADDING 5 //How far away from the edge you are when you start
 #define PLAYER_1_STARTDIR DIR_LEFT
@@ -25,12 +25,7 @@
 #define PLAYER_4_STARTDIR DIR_UP
 
 #define CMD_MOVE 0
-#define CMD_UPDATE 1
-#define CMD_CHANGEPLAYER 2
-#define CMD_ADDPLAYER 3
-#define CMD_KILLPLAYER 4
-#define CMD_NOTHING 5
-#define CMD_PRINT 6
+#define CMD_UPDATE_DATA 1
 
 typedef unsigned char col; //Color
 
@@ -55,11 +50,19 @@ struct gameState{
 	col board[MAPSIZE * MAPSIZE];
 };
 
-struct gameCommand{
+struct gameUpdate{
+	//int data[MAX_PLAYERS];//What to set each player to
+	int player1Dir;
+	int player2Dir;
+	int player3Dir;
+	int player4Dir;
+};
+
+/*struct gameCommand{
 	int cType; //The type of command
 
 	int player; //Player to do the comamnd on
 	int dir; //Direction to move
 	
 	char* msg; //Message to sends
-};
+};*/
