@@ -45,3 +45,24 @@ Installation (Run in terminal):
 apt-cache search libsdl2
 apt-get install libsdl2-dev
 ```
+
+## Running the game
+
+To compile the game, go to the ```src/``` directory, and do ```make server``` and ```make game```.
+
+To run the server, run this in src/
+```
+./server [MAX_PLAYERS]
+```
+MAX_PLAYERS is how many players can connect to the server at one time. If it's not specified, then it will default to 2. The maximum that you could make it is 4.
+
+To run the game, run this in src/
+```
+./game [IP]
+```
+IP is the IP address of the server. If it's not specified, then it will try to connect to the localhost (127.0.0.1).
+
+## Known bugs
+
+There aren't any specific bugs I can find. Please tell me if you can find any!
+
