@@ -10,8 +10,8 @@
 //#include <sys/shm.h>
 //#include <sys/sem.h>
 
-#define IPC_KEY 2123
-#define PORTNUM 1312
+#define IPC_KEY 106901
+#define PORTNUM 2123
 
 #define PIPE_READ 0
 #define PIPE_WRITE 1
