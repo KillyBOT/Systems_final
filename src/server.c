@@ -44,12 +44,9 @@ int main(int argc, char* argv[]){
 			cSocket[pConnected] = server_connect(lSocket);
 
 			write(cSocket[pConnected], &pConnected, sizeof(pConnected));
-			//addPlayer2(g,pConnected);
-			//u->data[pConnected] = PLAYER_STATE_ALIVE;
 			pDir[pConnected] = PLAYER_STATE_ALIVE;
 
 			pipe(pPipe[pConnected]);
-			//printf("%d %d\n", pPipe[pConnected][0], pPipe[pConnected][1]);
 
 			f = fork();
 			if(f == 0){
@@ -59,21 +56,14 @@ int main(int argc, char* argv[]){
 				close(pPipe[pConnected][PIPE_READ]);
 				close(cSocket[pConnected]);
 				cSocket[pConnected] = server_connect(lSocket);
-				//subServer_count++;
 				pConnected++;
 			}
 
-			//acceptConnects = 0;
 		}
-
-		//printf("%d %d %d %d\n", u->player1Dir,u->player2Dir,u->player3Dir,u->player4Dir);
 
 		for(int n = 0; n < pConnected; n++){
-			//printState(g);
 			write(pPipe[n][PIPE_WRITE],pDir,sizeof(pDir));
 		}
-
-		//fd_set client_fds;// The file descriptors for each client
 
 		while(runServer){
 			for(int n = 0; n < pConnected; n++){
@@ -83,11 +73,6 @@ int main(int argc, char* argv[]){
 
 				pDir[n] = dir;
 			}
-
-			// for(int x = 0; x < MAX_PLAYERS; x++){
-			// 	printf("%d ",pDir[x]);
-			// }
-			// printf("\n");
 
 			for(int n = 0; n < pConnected; n++) {
 				write(pPipe[n][PIPE_WRITE],pDir,sizeof(pDir));
@@ -100,7 +85,6 @@ int main(int argc, char* argv[]){
 					break;
 				}
 			}
-
 
 		}
 
@@ -128,7 +112,6 @@ int main(int argc, char* argv[]){
 
 void subServer(int cSocket, int player, int readPipe){
 
-	//struct gameUpdate* u = malloc(sizeof(struct gameUpdate));
 	int keepRunning = 1;
 	int pDir[MAX_PLAYERS];
 
@@ -145,7 +128,6 @@ void subServer(int cSocket, int player, int readPipe){
 	}
 	close(cSocket);
 	close(readPipe);
-	//free(u);
 
 	exit(0);
 }

@@ -19,7 +19,6 @@ int main(int argc, char* argv[]){
 	SDL_Event e; // Event handler
 
 	struct gameState* g; //Game state
-	//struct gameUpdate* u = malloc(sizeof(struct gameUpdate)); //Game update
 	int pDir[MAX_PLAYERS];
 
 	int player; //Which player are you?
@@ -41,7 +40,7 @@ int main(int argc, char* argv[]){
 			printf("Error initializing SDL! Closing...\n");
 			return 1;
 		}
-		
+
 		gWindow = SDL_CreateWindow("Snake Eater",SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if(gWindow == NULL){
 			printf("Window could not be initialized! Error: %s\n", SDL_GetError());
@@ -66,17 +65,28 @@ int main(int argc, char* argv[]){
 		printf("Color: ");
 		switch(player){
 			case PLAYER_1:
-			printf("RED");
+			printf(PLAYER_1_COLOR);
 			break;
 			case PLAYER_2:
-			printf("BLUE");
+			printf(PLAYER_2_COLOR);
 			break;
 			case PLAYER_3:
-			printf("GREEN");
+			printf(PLAYER_3_COLOR);
 			break;
 			case PLAYER_4:
-			printf("YELLOW");
+			printf(PLAYER_4_COLOR);
 			break;
+			case PLAYER_5:
+			printf(PLAYER_5_COLOR);
+			break;
+			case PLAYER_6:
+			printf(PLAYER_6_COLOR);
+			break;
+			case PLAYER_7:
+			printf(PLAYER_7_COLOR);
+			break;
+			case PLAYER_8:
+			printf(PLAYER_8_COLOR);
 			default:
 			printf("ERROR! Tell Kyle if you see this!");
 			break;
@@ -88,14 +98,14 @@ int main(int argc, char* argv[]){
 		printf("Waiting for other players to connect...\n");
 
 		recv(readSock,pDir,sizeof(pDir),MSG_WAITALL);
-		
+
 		for(int p = 0; p < MAX_PLAYERS; p++){
 			if(pDir[p] == PLAYER_STATE_ALIVE){
 				addPlayer2(g,p);
 			}
 		}
 
-		
+
 
 		drawGame(gRenderer, g);
 
@@ -216,7 +226,7 @@ int main(int argc, char* argv[]){
 			//printf("Test\n");
 
 		}
-			
+
 		printf("Game over!\n\n\n");
 		printLeaderBoard(g);
 
