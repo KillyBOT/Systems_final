@@ -49,20 +49,3 @@ struct gameState{
 
 	col board[MAPSIZE * MAPSIZE];
 };
-
-struct gameUpdate{
-	//int data[MAX_PLAYERS];//What to set each player to
-	int player1Dir;
-	int player2Dir;
-	int player3Dir;
-	int player4Dir;
-};
-
-/*struct gameCommand{
-	int cType; //The type of command
-
-	int player; //Player to do the comamnd on
-	int dir; //Direction to move
-	
-	char* msg; //Message to sends
-};*/

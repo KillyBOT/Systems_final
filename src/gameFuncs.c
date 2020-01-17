@@ -197,26 +197,6 @@ int checkDeath(struct gameState* g, int player, int x, int y){
 	return 0;
 }
 
-// void process(struct gameState* g, struct gameCommand gC){
-// 	switch(gC.cType){
-
-// 		case CMD_ADDPLAYER:
-// 		addPlayer2(g, gC.player);
-// 		break;
-
-// 		case CMD_MOVE:
-// 		movePlayer(g,gC.player,gC.dir);
-// 		break;
-
-// 		case CMD_NOTHING:
-// 		break;
-
-// 		default:
-// 		printf("Unknown command!\n");
-// 		break;
-// 	}
-// }
-
 col getCol(struct gameState* g, int x, int y){
 	return g->board[ (x * MAPSIZE) + y];
 }
@@ -224,24 +204,6 @@ col setCol(struct gameState* g, int x, int y, col newColor){
 	col oldCol = getCol(g, x, y);
 	g->board[(x * MAPSIZE) + y] = newColor;
 	return oldCol;
-}
-
-col getAttr(col attr, int player){
-	col toRet = 3;
-	toRet <<= player * 2;
-	toRet &= attr;
-	toRet >>= player * 2;
-	return toRet;
-}
-
-col setAttr(col oldAttr, col newVal, int player){
-	col finalAttr = 255;
-	finalAttr ^= (3 << (player * 2));
-	finalAttr = oldAttr & finalAttr;
-	col newAttr = newVal & 3;
-	newAttr <<= player * 2;
-	finalAttr |= newAttr;
-	return finalAttr;
 }
 
 void printState(struct gameState* g){
@@ -275,26 +237,3 @@ void printLeaderBoard(struct gameState* g){
 		printf("             %-8d%-9d%d\n", g->lBoard[x][1], g->lBoard[x][0], g->pLen[g->lBoard[x][0]]);
 	}
 }
-
-// struct gameCommand createCommand(int cType, int player){
-// 	struct gameCommand gC;
-// 	gC.cType = cType;
-// 	gC.player = player;
-
-// 	return gC;
-// }
-
-// struct gameCommand getCommand(int fd){
-// 	struct gameCommand gC;
-
-// 	read(fd, &gC.cType, sizeof(int));
-// 	read(fd, &gC.player, sizeof(int));
-
-// 	switch(gC.cType){
-// 		default:
-// 		printf("Unknown command!\n");
-// 		break;
-// 	}
-
-// 	return gC;
-// }

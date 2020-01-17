@@ -10,21 +10,19 @@ int main(int argc, char* argv[]){
 	int lSocket; //Listening socket
 	int cSocket[MAX_PLAYERS]; //Client sockets for each client
 	int subServer_count; //Number of sub serverss
-	int pPipe[MAX_PLAYERS][2]; //Pipes for communicating to each player 
-	//struct gameState* g = createState();
-	//struct gameUpdate* u = malloc(sizeof(struct gameUpdate));
-	int pDir[MAX_PLAYERS];
-	int f;
-	int pToAccept;
-	int pConnected;
+	int pPipe[MAX_PLAYERS][2]; //Pipes for communicating to each player
+	int pDir[MAX_PLAYERS]; //The buffer for the direction of each player. -1 means they're dead
+	int pToAccept; //How many players to accept connections from
+	int pConnected; //How many players are connected currently
 	int dir;
+	int f;
 
-	int acceptConnects;
-	int runServer;
-	int rerunServer = 1;
-	char buffer[4];
+	int acceptConnects; //Should the server accept connects
+	int runServer; //Should the main server loop run
+	int rerunServer = 1; //Should the server be repeated
+	char buffer[4]; //Just an input buffer
 
-	if(argc > 1) pToAccept = atoi(argv[1]);
+	if(argc > 1) pToAccept = atoi(argv[1]); //Set the max number of players that can connect to argv[1]
 	else pToAccept = 2;
 
 	lSocket = server_setup();
@@ -122,7 +120,7 @@ int main(int argc, char* argv[]){
 
 	}
 
-	
+
 
 	return 0;
 
