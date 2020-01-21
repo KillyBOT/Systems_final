@@ -235,17 +235,19 @@ int main(int argc, char* argv[]){
 
 		close(writeSock);
 		close(readSock);
-		closeSDL(gWindow,gRenderer);
 
 		printf("\nDo you want to play again? [Y/N]\n");
 
 		fgets(buffer,sizeof(buffer),stdin);
+		closeSDL(gWindow,gRenderer);
 
 		if(buffer[0] == 'y' || buffer[0] == 'Y') {
 			rerunGame = 1;
 			printf("Reconnecting to server...\n");
 		}
-		else rerunGame = 0;
+		else {
+			rerunGame = 0;
+		}
 	}
 
 	return 0;
