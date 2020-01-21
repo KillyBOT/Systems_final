@@ -23,7 +23,7 @@ Uh, the problem of being bored?
 Since this game is an online multiplayer game, it will utilize a client-server based architecture. The server will consist of one main server, which all clients will contact and send commands to, and several subservers, each one tasked with sending data to a specific client. This is to allow for a more streamlined design, since the main server doesn't need to concern itself over each socket; all the main server will do is read from one single socket. The port the server reads from is port 8080.
 Each player will have a seperate instance of the game running on their computer, and will be controlling one of the players. Each game tic, the player will move, and then they will send that movement to the main server. The main server will then send that movement over to all of the other players. Finally, each client will read from their respective socket to the server, and will carry out all of the commands that were sent to it. Of course, the game will have to be synchronized so that each player is playing the game at the same time, meaning sadly that the speed of the game will be dependent on the slowest player
 
-![Project Description Image](Systems Final Client-Server Image.png)
+![Project Description Image](/Systems Final Client-Server Image.png)
 
 ## Topics taught in class that this project will use
 
